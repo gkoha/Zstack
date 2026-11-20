@@ -1,0 +1,5 @@
+interface:
+  display_name: "Zstack mode"
+  short_description: "Rigorous workflow for kernel, QEMU, and virtualization work"
+policy:
+  allow_implicit_invocation: false
