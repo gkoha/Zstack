@@ -28,7 +28,8 @@ Write so a tired engineer understands on the first read.
 
 - Filler: "in order to", "it is important to note that".
 - AI vocabulary: delve, crucial, robust, leverage, landscape, pivotal,
-  seamless, showcase, underscore.
+  seamless, showcase, underscore (and when writing Chinese: empty fillers
+  such as 全面提升, 显著优化, 提升健壮性, 赋能, 值得注意的是, 综上所述).
 - "serves as" or "stands as" instead of "is".
 - "Not just X, but Y" constructions, forced lists of three, and dramatic
   reveals.

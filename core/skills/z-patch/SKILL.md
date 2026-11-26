@@ -6,7 +6,8 @@ description: Write commit messages, cover letters, and patch series for mailing-
 # Commits and patch series
 
 Read the project pack's upstream skill (`linux-upstream`, `qemu-upstream`)
-and the project's AI-content policy first. They override this file.
+and the project's AI-content policy first. They override this file. Apply
+`z-writing` to every subject, commit body, and cover letter.
 
 ## One commit, one logical change
 
@@ -18,8 +19,10 @@ and the project's AI-content policy first. They override this file.
 ## Subject
 
 `subsystem: imperative summary`, about 50 to 70 characters, no trailing period.
-Copy the prefix style from `git log --oneline -- <file>` for the files you
-touch.
+Copy the prefix and phrasing style from `git log -n 10 --oneline -- <file>`
+for the files you touch. Name the concrete action and object; avoid vague
+openers such as `Enhance`, `Improve`, `Ensure proper`, `Comprehensive`, or
+`Refactor ... for better maintainability`.
 
 ## Body
 
@@ -32,6 +35,21 @@ Wrap at 72 to 75 columns. Explain, in this order:
 4. How it was verified: the test, the reproducer, and the setup. For
    performance, the numbers with run count and spread.
 
+## Plain commit style
+
+Write like a human maintainer of the repository, not a generated summary:
+
+- Match the tone and brevity of recent commits in `git log -n 10 -- <file>`.
+- Use short plain-text paragraphs focused on *why*. Do not narrate the diff
+  into a bullet list (`- Added foo()`, `- Updated bar()`, `- Handled edge
+  case`); `git show` already shows the diff.
+- Plain text only: no Markdown headings (`###`), bold (`**`), fenced code
+  blocks, em dashes as connectors, or emoji.
+- Cut empty wrap-up sentences (`This improves robustness and maintainability`,
+  `This prevents potential issues`, `makes the code cleaner`, or Chinese
+  equivalents such as `提升健壮性`, `优化代码结构`, `确保一致性`). State
+  the concrete bug, invariant, or behavioral effect instead.
+
 ## Tags
 
 - `Fixes: <12+ char sha> ("<full subject>")` only when a specific commit
@@ -39,7 +57,11 @@ Wrap at 72 to 75 columns. Explain, in this order:
 - `Link:`, `Closes:`, `Reported-by:`, `Suggested-by:` only when they apply.
 - Never add `Signed-off-by:`, `Reviewed-by:`, `Tested-by:`, or `Acked-by:`
   for anyone. The human adds their own `Signed-off-by:` when submitting.
-- Disclose meaningful tool or AI assistance as the project requires.
+- Never add `Co-Authored-By:` for an AI tool or model, and never append
+  generated-by footers or banners (`Generated with ...`).
+- Only add AI/tool disclosure when the project's upstream policy explicitly
+  requires it (for example `linux-upstream`), and use the exact format that
+  policy specifies.
 
 ## Cover letter
 
