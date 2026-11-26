@@ -28,12 +28,15 @@ When two levels disagree, the higher one wins. Say which rule you followed.
 - A development task that will change project files: follow `z-task-record`
   before the first edit.
 - Code that crosses a function or file boundary: run `z-architect` first and
-  name the data structure before the logic.
+  name the data structure before the logic. Multiple competing shapes:
+  `z-arena`. Parallel fan-out: `z-swarm`.
 - A change to uAPI, ABI, QAPI/QMP, a migration stream, machine-type defaults,
   or an on-disk format: read `principles/keep-external-contracts.md` first.
 - A number you measured: `z-benchmark`.
 - A change you do not fully trust: `z-blast-radius`. A contested design:
-  `z-interrogate`.
+  `z-interrogate`. Before review or patch prep: consider `z-no-comments`.
+- Long, iterative, or unattended work: keep a decision trail with `z-log`.
+- Recurring agent mistakes in a repo: fix structurally with `z-correct`.
 - Commit messages, cover letters, and patch series: `z-patch`, then the
   project pack's upstream skill.
 - Any prose you write, the reply included: `z-writing`.
@@ -41,7 +44,7 @@ When two levels disagree, the higher one wins. Say which rule you followed.
 - Never add `Signed-off-by:` for the user. Never send mail, post to a list,
   or push unless the user asked for that action in this session.
 - In the reply, name each principle that changed a decision and the decision
-  it changed.
+  it changed. Cite only principles you read in this session.
 
 ## Principles
 
@@ -65,8 +68,14 @@ Read the file in full before you apply it.
 - `model-the-domain`: stateful logic, many flags, or long if/else chains.
 - `boundary-discipline`: guest, user space, or device input. Validate at
   the boundary and trust it inside.
+- `type-system-discipline`: structs, enums, sparse annotations, compile-time
+  invariants. Make illegal states unrepresentable.
 - `keep-external-contracts`: uAPI, ABI, QAPI, migration, machine types.
 - `migrate-callers-then-delete`: changing an in-tree internal API.
+- `separate-before-serializing-shared-state`: concurrent contexts or parallel
+  workers. Isolate writes first; lock only for true shared invariants.
+- `make-operations-idempotent`: teardown, hotplug, reset, error paths, and
+  scripts. Converge cleanly across retries and partial failures.
 
 **Verification**
 
@@ -95,10 +104,20 @@ answer.
 ## Subagents
 
 Read `references/harness.md` for the tool names in Claude Code and Codex.
+The session running `z-mode` owns the playbook, review, and verification;
+delegate implementation or parallel slices when the harness offers subagents,
+otherwise run inline with the same review separation.
+
 When you start a subagent, the first line of its brief is
 `Read <abs path of this folder>/worker.md before anything else.` Then state
-the goal, the files, and the success check. Review the subagent's diff
-yourself. A subagent report is a claim, not proof.
+the goal, the exact files, the chosen shape, and the success check.
+
+**Fresh subagents by default.** Give a fix round, retry, follow-up, or next
+queue item to a fresh subagent with the original brief, later directives, and
+the prior report or branch. Resume an existing subagent only when it holds
+state that is costly to move (a running VM, uncommitted checkout, or active
+debug session). Review every subagent's diff yourself. A subagent report is a
+claim, not proof.
 
 ## Playbooks
 
@@ -112,12 +131,14 @@ steps into the todo list. If none fits, use `figure-it-out`.
 | Something that used to work | `regression-bisect` |
 | New behavior | `feature` |
 | Structure changes, behavior does not | `refactoring` |
-| Too slow, too much memory, too many exits | `perf-issue` |
+| One-off slowness, memory, or VM-exit issue | `perf-issue` |
+| Sustained iterative optimization against a metric target | `hillclimb` |
 | Diagnose a live system: perf, ftrace, gdb, QEMU trace | `runtime-forensics` |
 | Diagnose a saved artifact: oops, vmcore, core dump, log | `artifact-forensics` |
 | Settle a question with a throwaway experiment | `prototype` |
 | Plan a multi-patch series without implementing it | `series-plan` |
 | Turn finished work into a patch series | `preparing-a-series` |
+| Drive to a checkable exit condition without stopping | `autonomous-run` |
 | Resume a previous session | `session-pickup` |
 | Stop cleanly | `pause-safely` |
 | Write or change a skill | `authoring-a-skill` |

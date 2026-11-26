@@ -52,8 +52,11 @@ for md in sorted(ROOT.glob("*/**/skills/*/SKILL.md")):
             errors.append(f"{rel}: manual-only skill lacks agents/openai.yaml "
                           "with allow_implicit_invocation: false")
 
-ref_re = re.compile(r"`((?:\.\./)?[A-Za-z0-9_./<>-]+\.(?:md|yaml))`")
+ref_re = re.compile(r"`((?:\.\./)?[A-Za-z0-9_./<>-]+\.(?:md|yaml|sh|tsv))`")
 for name, d in skills.items():
+    for sh in d.glob("scripts/*.sh"):
+        if not (sh.stat().st_mode & 0o111):
+            errors.append(f"{sh.relative_to(ROOT)}: script is not executable")
     for md in d.rglob("*.md"):
         for ref in ref_re.findall(md.read_text(encoding="utf-8")):
             if "<" in ref:
@@ -62,10 +65,14 @@ for name, d in skills.items():
                 parts = ref[3:].split("/", 1)
                 target = skills.get(parts[0])
                 path = target / parts[1] if target and len(parts) == 2 else None
-            elif "/" in ref and ref.split("/", 1)[0] in ("playbooks", "principles", "references", "agents"):
+            elif "/" in ref and ref.split("/", 1)[0] in (
+                "playbooks", "principles", "references", "agents"
+            ):
+                path = d / ref
+            elif ref.startswith("scripts/") and (d / "scripts").is_dir():
                 path = d / ref
             else:
-                continue  # project file such as docs/devel/foo.rst
+                continue  # project file such as docs/devel/foo.rst or scripts/decode_stacktrace.sh
             if path is None or not path.exists():
                 errors.append(f"{md.relative_to(ROOT)}: broken reference {ref}")
 

@@ -8,13 +8,16 @@
 ```
 core/skills/          公共部分，每个项目都装
   z-mode/             入口：选 playbook、套用原则、验证
-    playbooks/        15 个流程
-    principles/       19 条原则
+    playbooks/        17 个流程
+    principles/       22 条原则
     references/       Claude Code / Codex 工具名对照
     worker.md         子 agent 必读规则
   z-task-record/      .mydoc/ 任务记录
+  z-log/              append-only TSV 决策日志（含 scripts/log.sh）
   z-architect/ z-blast-radius/ z-interrogate/ z-benchmark/
-  z-how/ z-why/ z-tdd/ z-patch/ z-writing/ z-reflect/
+  z-how/ z-why/ z-teach/ z-recall/ z-tdd/ z-patch/ z-writing/ z-reflect/
+  z-correct/ z-sharpen/ z-reframe/ z-in-your-own-words/
+  z-swarm/ z-arena/ z-create-verify/ z-no-comments/
 packs/qemu/skills/
   qemu-dev/           QEMU 知识：KVM、VFIO、virtio、迁移、构建测试
   qemu-upstream/      上游 QEMU 提交规则（含 AI 内容限制）
@@ -55,9 +58,11 @@ npx skills add https://github.com/gkoha/Zstack/tree/main/packs/linux --skill lin
 - Claude Code：`/z-mode` 后输入任务。
 - Codex：`$z-mode` 或 `/skills` 选择。
 
-`z-mode`、`z-interrogate`、`z-reflect` 只在显式调用时启动（Claude Code 用
-`disable-model-invocation: true`，Codex 用 `agents/openai.yaml`）。其余技能由
-agent 按 description 自动选用。
+显式调用型工作流技能（`z-mode`、`z-interrogate`、`z-reflect`、`z-correct`、
+`z-sharpen`、`z-reframe`、`z-teach`、`z-recall`、`z-log`、`z-swarm`、`z-arena`、
+`z-create-verify`、`z-in-your-own-words`、`z-no-comments`）只在手动触发时启动
+（Claude Code 用 `disable-model-invocation: true`，Codex 用 `agents/openai.yaml`）。
+其余技能由 agent 按 description 自动选用。
 
 ## 优先级
 
@@ -68,7 +73,7 @@ pack > Zstack core。只在一个仓库成立的规则放在那个仓库自己�
 ## 修改技能
 
 1. 改 Zstack 仓库里的文件，不要改已安装的副本。
-2. 运行 `python3 scripts/check-skills.py`，检查 frontmatter、重名和跨文件引用。
+2. 运行 `python3 scripts/check-skills.py`，检查 frontmatter、重名、脚本权限和跨文件引用。
 3. 提交、推送后，在项目里执行 `npx skills update`。
 
 新增项目 pack：建 `packs/<name>/skills/<skill>/SKILL.md`，按上面的命令安装。
@@ -76,20 +81,26 @@ pack > Zstack core。只在一个仓库成立的规则放在那个仓库自己�
 ## 从 pstack 移植的内容
 
 pstack 采用 MIT 许可，版权声明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-以下内容按 pstack 的结构重写，并改成内核和 QEMU 的场景。
+以下内容按 pstack 的结构移植并适配为 Linux 内核、QEMU 和虚拟化场景，同时保持跨
+Claude Code 和 Codex 可用（不依赖 Cursor 专属功能）。
 
 | Zstack | 来自 pstack | 改动 |
 | --- | --- | --- |
-| `z-mode` | `poteto-mode` | 去掉 Cursor 模型路由、Bugbot、PR 流程；加入"仓库规则优先"和不加 `Signed-off-by:`、不发邮件 |
+| `z-mode` | `poteto-mode` | 去掉 Cursor 模型路由、Bugbot、PR 流程；保留新鲜子 agent、Lead/Worker 分离与原则触发；加入"仓库规则优先"和不加 `Signed-off-by:`、不发邮件 |
 | `z-mode/worker.md` | `poteto-mode/worker.md` | 去掉 PR 格式，改成补丁和宿主机安全约束 |
 | `z-mode/references/harness.md` | `docs/harness/claude-code.md` | 改成 Claude Code 和 Codex 两列对照 |
-| 19 条原则 | 24 条 `principle-*` | 见下表 |
-| playbook：investigation、bug-fix、feature、refactoring、perf-issue、runtime-forensics、prototype、session-pickup、pause-safely、authoring-a-skill | 同名 playbook | 工具换成 ftrace、perf、gdb、QEMU trace、selftest、qtest |
+| 22 条原则 | 24 条 `principle-*` | 见下表 |
+| playbook：investigation、bug-fix、feature、refactoring、perf-issue、hillclimb、autonomous-run、runtime-forensics、prototype、session-pickup、pause-safely、authoring-a-skill | 同名 playbook | 工具换成 ftrace、perf、gdb、QEMU trace、selftest、qtest；去掉 Cursor `/loop` 与 PR 步骤，保留吞吐检查点、冻结 harness 与退出谓词循环 |
 | `artifact-forensics` | `trace-forensics` | 对象换成 oops、vmcore、core dump |
 | `series-plan` | `multi-phase-plan` | PR 换成补丁系列 |
 | `preparing-a-series` | `opening-a-pr` + `shipping` | 改成邮件列表流程，只生成补丁不发送 |
-| `figure-it-out` | `figure-it-out` 技能 | 精简为 playbook |
-| `z-architect`、`z-blast-radius`、`z-interrogate`、`z-benchmark`、`z-how`、`z-why`、`z-tdd`、`z-reflect` | `architect`、`blast-radius`、`interrogate`、`benchmark-checklist`、`how`、`why`、`tdd`、`reflect` | 加入锁、生命周期、uAPI、迁移、VM-exit 等检查项 |
+| `figure-it-out` | `figure-it-out` 技能 | 保留完整 5 阶段闭环、三态判定、门禁防作弊和 `z-log` 联动，纳入 playbook |
+| `z-architect`、`z-blast-radius`、`z-interrogate`、`z-benchmark`、`z-how`、`z-why`、`z-tdd`、`z-reflect` | `architect`、`blast-radius`、`interrogate`、`benchmark-checklist`、`how`、`why`、`tdd`、`reflect` | 加入锁、生命周期、uAPI、迁移、VM-exit 等检查项；`z-blast-radius` 保留 5 级确信度阶梯 |
+| `z-correct`、`z-sharpen`、`z-reframe`、`z-teach`、`z-recall`、`z-in-your-own-words` | `correct`、`sharpen`、`reframe`、`teach`、`recall`、`in-your-own-words` | 全面改写为内核/QEMU 工具链、`.mydoc/` 与 Claude Code/Codex transcript 路径 |
+| `z-log`（含 `scripts/log.sh`） | `show-me-your-work` | 保留 append-only TSV、run 边界 `start` 行、transcript 自审与独立复核，默认落盘到 `.mydoc/<task>/output/decisions.tsv` |
+| `z-swarm`、`z-arena` | `swarm`、`arena` | 去掉 Cursor 模型路由与 Cloud Agent 绑定，保留并行切片/竞速 SHA 校验、隐式 Rubric 盲评与基底嫁接 |
+| `z-create-verify` | `create-verification-skill` + `maintain-verification-skill` | 合并生成与定期维护两套模式，面向 QEMU VM/QMP、内核 `-kernel`、VFIO/vGPU 与 selftest |
+| `z-no-comments` | `no-comments` + `agents/comment-sicko.md` | 改写为内核/QEMU 白名单（放行 SPDX、锁与内存屏障注释、硬件 quirk/spec、kernel-doc），猎杀废话与 workaround 注释并推动重构或静态断言编码 |
 | `z-writing` | `unslop` + `technical-writing` | 合并，加入代码注释规则 |
 | `z-patch` | `opening-a-pr` 的标题和正文规则 | 改成 commit message 和 cover letter |
 
@@ -97,15 +108,14 @@ pstack 采用 MIT 许可，版权声明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_
 
 | Zstack | pstack |
 | --- | --- |
-| 照搬并改写示例（17 条） | laziness-protocol、foundational-thinking、redesign-from-first-principles、attack-the-premise、subtract-before-you-add、minimize-reader-load、build-the-lever、model-the-domain、boundary-discipline、prove-it-works、fix-root-causes、sequence-verifiable-units、test-behavior-not-implementation、explain-the-number、guard-the-context-window、never-block-on-the-human、encode-lessons-in-structure |
+| 移植并改写为系统编程示例（20 条） | laziness-protocol、foundational-thinking、redesign-from-first-principles、attack-the-premise、subtract-before-you-add、minimize-reader-load、build-the-lever、model-the-domain、boundary-discipline、type-system-discipline（改为 C/sparse/`BUILD_BUG_ON` 语境）、separate-before-serializing-shared-state、make-operations-idempotent、prove-it-works、fix-root-causes、sequence-verifiable-units、test-behavior-not-implementation、explain-the-number、guard-the-context-window、never-block-on-the-human、encode-lessons-in-structure |
 | 改名（1 条） | migrate-callers-then-delete-legacy-apis → `migrate-callers-then-delete`（限定为内部 API） |
 | 新增（1 条） | `keep-external-contracts`：uAPI、QAPI、迁移流、machine type |
-| 未移植（6 条） | experience-first、exhaust-the-design-space（偏 UI 产品）、type-system-discipline（偏 TypeScript）、outcome-oriented-execution（与内核"每个补丁可 bisect"冲突）、separate-before-serializing-shared-state（并行 worker 场景，并入 foundational-thinking 的并发检查）、make-operations-idempotent（偏分布式任务重试） |
+| 未移植（3 条） | experience-first、exhaust-the-design-space（偏 UI/产品体验）、outcome-oriented-execution（与内核"每个补丁可 bisect"冲突） |
 
-未移植的 pstack 内容：模型路由和 `setup-pstack`、`arena`、`swarm`、
-`ketchup`、`bro`、`recall`、`teach`、`statechart`、形式化验证生成器、
-`no-comments`、`automate-me`、`correct`、`sharpen`、Benny 自动化，以及
-babysit、shipping、hillclimb、autopilot、visual-parity、eval、worktree-cleanup
+未移植的 pstack 内容：模型路由和 `setup-pstack`、`poteto-help`、`ketchup`/`ketchup-video`、
+`bro`、`make-bot-ui`、`automate-me`、`typescript-best-practices`、`statechart` 与形式化验证生成器、
+Benny 自动化，以及 babysit、shipping、autopilot、visual-parity、eval、worktree-cleanup
 等依赖 Cursor、GitHub PR 或 UI 的 playbook。
 
 ## 来自现有项目技能的公共部分
