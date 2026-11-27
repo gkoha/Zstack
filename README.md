@@ -21,7 +21,7 @@ core/skills/          公共部分，每个项目都装
   z-swarm/ z-arena/ z-create-verify/ z-no-comments/
 packs/qemu/skills/
   qemu-dev/           QEMU 知识：KVM、VFIO、virtio、迁移、构建测试
-  qemu-upstream/      上游 QEMU 提交规则（含 AI 内容限制）
+  qemu-upstream/      上游 QEMU 补丁检查与提交流程
 packs/linux/skills/
   linux-dev/          内核知识：KVM、VFIO/mdev、iommufd、virtio、调试
   linux-upstream/     上游内核提交规则（DCO、AI 披露）
@@ -134,5 +134,5 @@ Benny 自动化，以及 babysit、shipping、autopilot、visual-parity、eval�
 - 不清理用户改动、窄测试优先、跑 checkpatch、不发外部通信（`z-mode`、`z-patch`）。
 
 项目相关部分进了 pack：QEMU 的子系统文档索引、构建目录和测试规则进
-`qemu-dev`；AI 内容政策进 `qemu-upstream`；内核 commit 和 DCO 规则进
+`qemu-dev`；QEMU 补丁检查和提交流程进 `qemu-upstream`；内核 commit 和 DCO 规则进
 `linux-upstream`。两个仓库里原有的技能文件没有改动。

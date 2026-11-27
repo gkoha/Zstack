@@ -7,11 +7,7 @@ description: QEMU development knowledge for virtualization work - KVM accelerato
 
 ## Repository rules first
 
-- Read the repository's `AGENTS.md` and `docs/devel/code-provenance.rst` when
-  they exist. In upstream QEMU, agent output may not go into upstream
-  contributions. Permitted uses are research, static analysis, debugging,
-  local experiments not meant for upstream, and trivial changes. Flag this
-  early when a request would cross it.
+- Read the repository's `AGENTS.md` when it exists.
 - If the repository has its own `qemu-codebase` skill, read it for orientation
   and its task-record rules. It overrides this file where they differ.
 - Before calling a crash a security bug, read `docs/system/security.rst`. Only
