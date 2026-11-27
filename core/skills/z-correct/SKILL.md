@@ -16,7 +16,7 @@ whole tree.
 
 ## Find the mistake classes
 
-Read recent commits, reverts, review comments, `AGENTS.md`/`CLAUDE.md`,
+Read recent commits, reverts, review comments, `AGENTS.md`/`CLAUDE.md`/`GEMINI.md`,
 `.mydoc/` task records, and comments explaining workarounds. Group recurring
 failures into classes. A class counts once it has happened twice.
 
@@ -55,7 +55,8 @@ offending line with a concrete reason and owner approval.
 ## Keep the rule table
 
 Maintain a compact table in the repository's agent instruction file
-(`AGENTS.md` or `CLAUDE.md`) pairing each durable rule with what enforces it.
+(`AGENTS.md`, `CLAUDE.md`, or `GEMINI.md`) pairing each durable rule with what
+enforces it.
 When the user corrects a mistake, fix the mistake and update the table. If a
 rule is already listed with no enforcement and the mistake repeats, escalate
 it to a higher level in the same change. Drop a rule once the mistake can no

@@ -1,6 +1,7 @@
 # Zstack
 
-面向 Linux 内核、QEMU 和虚拟化开发的 agent 技能集，支持 Claude Code 和 Codex。
+面向 Linux 内核、QEMU 和虚拟化开发的 agent 技能集，支持 Claude Code、Codex、
+Gemini CLI 和 Antigravity。
 工作流程和公共约束参考了 [pstack](https://github.com/cursor/plugins/tree/main/pstack)。
 
 ## 目录结构
@@ -10,7 +11,7 @@ core/skills/          公共部分，每个项目都装
   z-mode/             入口：选 playbook、套用原则、验证
     playbooks/        17 个流程
     principles/       22 条原则
-    references/       Claude Code / Codex 工具名对照
+    references/       Claude Code / Codex / Gemini CLI / Antigravity 工具名对照
     worker.md         子 agent 必读规则
   z-task-record/      .mydoc/ 任务记录
   z-log/              append-only TSV 决策日志（含 scripts/log.sh）
@@ -32,22 +33,23 @@ scripts/check-skills.py
 
 ## 安装
 
-在项目根目录执行。`-a` 同时装到 Claude Code（`.claude/skills/`）和 Codex
-（`.agents/skills/`）。
+在项目根目录执行。`-a` 选择要装到的 agent：Claude Code 装到 `.claude/skills/`；
+Codex、Gemini CLI、Antigravity 共用 `.agents/skills/`（Gemini CLI 和 Antigravity
+都会读这个目录）。下面的命令把四个都列出来，只用其中几个就删掉对应的 `-a`。
 
 ```bash
 # 每个项目都装
-npx skills add https://github.com/gkoha/Zstack/tree/main/core --skill '*' -a claude-code -a codex
+npx skills add https://github.com/gkoha/Zstack/tree/main/core --skill '*' -a claude-code -a codex -a gemini-cli -a antigravity
 
 # QEMU 项目
-npx skills add https://github.com/gkoha/Zstack/tree/main/packs/qemu --skill '*' -a claude-code -a codex
+npx skills add https://github.com/gkoha/Zstack/tree/main/packs/qemu --skill '*' -a claude-code -a codex -a gemini-cli -a antigravity
 
 # 内核项目
-npx skills add https://github.com/gkoha/Zstack/tree/main/packs/linux --skill '*' -a claude-code -a codex
+npx skills add https://github.com/gkoha/Zstack/tree/main/packs/linux --skill '*' -a claude-code -a codex -a gemini-cli -a antigravity
 
 # vGPU 项目：只要知识，不要上游流程
-npx skills add https://github.com/gkoha/Zstack/tree/main/packs/qemu  --skill qemu-dev  -a claude-code -a codex
-npx skills add https://github.com/gkoha/Zstack/tree/main/packs/linux --skill linux-dev -a claude-code -a codex
+npx skills add https://github.com/gkoha/Zstack/tree/main/packs/qemu  --skill qemu-dev  -a claude-code -a codex -a gemini-cli -a antigravity
+npx skills add https://github.com/gkoha/Zstack/tree/main/packs/linux --skill linux-dev -a claude-code -a codex -a gemini-cli -a antigravity
 ```
 
 更新：`npx skills update`。安装生成的 `skills-lock.json`、`.claude/skills/` 和
@@ -57,12 +59,16 @@ npx skills add https://github.com/gkoha/Zstack/tree/main/packs/linux --skill lin
 
 - Claude Code：`/z-mode` 后输入任务。
 - Codex：`$z-mode` 或 `/skills` 选择。
+- Gemini CLI、Antigravity：直接说"用 z-mode 技能做这个任务"。Gemini CLI 会调用
+  `activate_skill` 并要求你确认。
 
 显式调用型工作流技能（`z-mode`、`z-interrogate`、`z-reflect`、`z-correct`、
 `z-sharpen`、`z-reframe`、`z-teach`、`z-recall`、`z-log`、`z-swarm`、`z-arena`、
 `z-create-verify`、`z-in-your-own-words`、`z-no-comments`）只在手动触发时启动
 （Claude Code 用 `disable-model-invocation: true`，Codex 用 `agents/openai.yaml`）。
-其余技能由 agent 按 description 自动选用。
+Gemini CLI 和 Antigravity 的文档只定义 `name` 和 `description`，这两个标记在它们
+那里不生效：模型有可能自己加载这些技能，Gemini CLI 里唯一的拦截是加载前的确认
+提示。其余技能由 agent 按 description 自动选用。
 
 ## 优先级
 
@@ -82,13 +88,13 @@ pack > Zstack core。只在一个仓库成立的规则放在那个仓库自己�
 
 pstack 采用 MIT 许可，版权声明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 以下内容按 pstack 的结构移植并适配为 Linux 内核、QEMU 和虚拟化场景，同时保持跨
-Claude Code 和 Codex 可用（不依赖 Cursor 专属功能）。
+Claude Code、Codex、Gemini CLI 和 Antigravity 可用（不依赖 Cursor 专属功能）。
 
 | Zstack | 来自 pstack | 改动 |
 | --- | --- | --- |
 | `z-mode` | `poteto-mode` | 去掉 Cursor 模型路由、Bugbot、PR 流程；保留新鲜子 agent、Lead/Worker 分离与原则触发；加入"仓库规则优先"和不加 `Signed-off-by:`、不发邮件 |
 | `z-mode/worker.md` | `poteto-mode/worker.md` | 去掉 PR 格式，改成补丁和宿主机安全约束 |
-| `z-mode/references/harness.md` | `docs/harness/claude-code.md` | 改成 Claude Code 和 Codex 两列对照 |
+| `z-mode/references/harness.md` | `docs/harness/claude-code.md` | 改成 Claude Code、Codex、Gemini CLI、Antigravity 四列对照 |
 | 22 条原则 | 24 条 `principle-*` | 见下表 |
 | playbook：investigation、bug-fix、feature、refactoring、perf-issue、hillclimb、autonomous-run、runtime-forensics、prototype、session-pickup、pause-safely、authoring-a-skill | 同名 playbook | 工具换成 ftrace、perf、gdb、QEMU trace、selftest、qtest；去掉 Cursor `/loop` 与 PR 步骤，保留吞吐检查点、冻结 harness 与退出谓词循环 |
 | `artifact-forensics` | `trace-forensics` | 对象换成 oops、vmcore、core dump |
@@ -96,7 +102,7 @@ Claude Code 和 Codex 可用（不依赖 Cursor 专属功能）。
 | `preparing-a-series` | `opening-a-pr` + `shipping` | 改成邮件列表流程，只生成补丁不发送 |
 | `figure-it-out` | `figure-it-out` 技能 | 保留完整 5 阶段闭环、三态判定、门禁防作弊和 `z-log` 联动，纳入 playbook |
 | `z-architect`、`z-blast-radius`、`z-interrogate`、`z-benchmark`、`z-how`、`z-why`、`z-tdd`、`z-reflect` | `architect`、`blast-radius`、`interrogate`、`benchmark-checklist`、`how`、`why`、`tdd`、`reflect` | 加入锁、生命周期、uAPI、迁移、VM-exit 等检查项；`z-blast-radius` 保留 5 级确信度阶梯 |
-| `z-correct`、`z-sharpen`、`z-reframe`、`z-teach`、`z-recall`、`z-in-your-own-words` | `correct`、`sharpen`、`reframe`、`teach`、`recall`、`in-your-own-words` | 全面改写为内核/QEMU 工具链、`.mydoc/` 与 Claude Code/Codex transcript 路径 |
+| `z-correct`、`z-sharpen`、`z-reframe`、`z-teach`、`z-recall`、`z-in-your-own-words` | `correct`、`sharpen`、`reframe`、`teach`、`recall`、`in-your-own-words` | 全面改写为内核/QEMU 工具链、`.mydoc/` 与各 harness 的 transcript 路径 |
 | `z-log`（含 `scripts/log.sh`） | `show-me-your-work` | 保留 append-only TSV、run 边界 `start` 行、transcript 自审与独立复核，默认落盘到 `.mydoc/<task>/output/decisions.tsv` |
 | `z-swarm`、`z-arena` | `swarm`、`arena` | 去掉 Cursor 模型路由与 Cloud Agent 绑定，保留并行切片/竞速 SHA 校验、隐式 Rubric 盲评与基底嫁接 |
 | `z-create-verify` | `create-verification-skill` + `maintain-verification-skill` | 合并生成与定期维护两套模式，面向 QEMU VM/QMP、内核 `-kernel`、VFIO/vGPU 与 selftest |

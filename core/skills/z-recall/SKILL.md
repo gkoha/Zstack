@@ -18,9 +18,9 @@ Working context lives in two places:
    long-running bug or series keeps much of its truth here, so never rely on
    transcripts alone.
 
-See `../z-mode/references/harness.md` for Claude Code and Codex session
-transcript paths. Read only the active workspace's transcripts. Never glob
-across other projects.
+See `../z-mode/references/harness.md` for Claude Code, Codex, Gemini CLI,
+and Antigravity session transcript paths. Read only the active workspace's
+transcripts. Never glob across other projects.
 
 ## Steps
 

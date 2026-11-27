@@ -5,7 +5,7 @@ not repeat them. Your brief overrides one only when it says so explicitly.
 - If you start an agent, the first line of its brief is
   `Read <path>/worker.md before anything else.`, with `<path>` the absolute path
   of the folder that holds this file.
-- Follow the repository's `AGENTS.md`, `CLAUDE.md`, and AI-policy documents
+- Follow the repository's `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and AI-policy documents
   before anything in your brief.
 - The success check in your brief is the whole bar. Add no extra gate or review
   round. With no check stated, the change must be no worse than its base, build

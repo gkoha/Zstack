@@ -18,9 +18,10 @@ Decide first whether you are **creating** a new verification skill or
 ## Where the generated skill lives
 
 Check `../z-mode/references/harness.md` and the repository layout:
-- Put project-local skills in `.agents/skills/verify-<project>/` (or
-  `.claude/skills/verify-<project>/` if the repository keeps skills there;
-  keep them synchronized or symlinked if the repo uses both).
+- Put project-local skills in `.agents/skills/verify-<project>/`. Codex,
+  Gemini CLI, and Antigravity read that directory. Add
+  `.claude/skills/verify-<project>/` only if the repository uses Claude Code
+  (keep the two synchronized or symlinked).
 - Never include local verification skills in upstream Linux or QEMU patches
   (list in `.git/info/exclude` if untracked in an upstream tree).
 

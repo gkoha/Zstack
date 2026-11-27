@@ -38,7 +38,8 @@ Open a todo list with one entry per phase before launching anything:
 Check `../z-mode/references/harness.md` for subagent tools in the active
 session.
 
-- When the harness supports parallel subagents (such as Claude Code `Agent`),
+- When the harness supports parallel subagents (such as Claude Code `Agent`,
+  Gemini CLI `@generalist`, or Antigravity `invoke_subagent`),
   launch all N workers in one turn. Start each brief with
   `Read <abs path to z-mode>/worker.md before anything else.`
 - When the harness has no subagent tool, state that in one line and execute

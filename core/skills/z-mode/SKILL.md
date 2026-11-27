@@ -13,7 +13,7 @@ folder. Read a file before you cite it.
 
 ## Order of authority
 
-1. The repository's own rules: `AGENTS.md`, `CLAUDE.md`, its contribution and
+1. The repository's own rules: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, its contribution and
    AI-policy documents, and project-local skills that are not Zstack skills.
 2. The Zstack project pack installed in this repository, such as `qemu-dev`,
    `qemu-upstream`, `linux-dev`, or `linux-upstream`.
@@ -103,7 +103,8 @@ answer.
 
 ## Subagents
 
-Read `references/harness.md` for the tool names in Claude Code and Codex.
+Read `references/harness.md` for the tool names in Claude Code, Codex, Gemini
+CLI, and Antigravity.
 The session running `z-mode` owns the playbook, review, and verification;
 delegate implementation or parallel slices when the harness offers subagents,
 otherwise run inline with the same review separation.

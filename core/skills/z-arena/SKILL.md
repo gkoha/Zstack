@@ -23,7 +23,8 @@ Every candidate receives the same core task contract.
 3. Plan diversity across N candidates (usually 2 or 3):
    - If the harness supports distinct models, spread candidates across
      models.
-   - In a single-model harness (typical Claude Code or Codex), give each
+   - In a single-model harness (typical Claude Code, Codex, or Gemini CLI),
+     give each
      candidate either an independent clean run or a distinct architectural
      lens (for example: minimal-diff integration vs explicit state-machine
      reshape vs zero-new-lock isolation) so candidates explore genuinely
