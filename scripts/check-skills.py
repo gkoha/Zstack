@@ -28,6 +28,34 @@ def frontmatter(path):
     return fields
 
 
+try:
+    import yaml
+except ImportError:
+    yaml = None
+
+
+def check_yaml(path, rel):
+    """`npx skills` skips a skill whose frontmatter is not valid YAML, for
+    example an unquoted description that contains ': '."""
+    text = path.read_text(encoding="utf-8")
+    block = text[4:text.find("\n---\n", 4)]
+    if yaml is not None:
+        try:
+            data = yaml.safe_load(block)
+        except yaml.YAMLError as e:
+            errors.append(f"{rel}: frontmatter is not valid YAML "
+                          f"(quote the value?): {str(e).splitlines()[0]}")
+            return
+        if not isinstance(data, dict):
+            errors.append(f"{rel}: frontmatter is not a YAML mapping")
+        return
+    for line in block.splitlines():  # fallback without PyYAML
+        m = re.match(r"^([A-Za-z_-]+):\s*(.+)$", line)
+        if m and m.group(2)[0] not in "\"'>|" and re.search(r":(\s|$)|\s#", m.group(2)):
+            errors.append(f"{rel}: unquoted '{m.group(1)}' contains ': ' or ' #'; "
+                          "quote it")
+
+
 skills = {}
 for md in sorted(ROOT.glob("*/**/skills/*/SKILL.md")):
     d = md.parent
@@ -43,6 +71,7 @@ for md in sorted(ROOT.glob("*/**/skills/*/SKILL.md")):
         errors.append(f"{rel}: name '{name}' is not lowercase-hyphen")
     if not fm.get("description"):
         errors.append(f"{rel}: empty description")
+    check_yaml(md, rel)
     if name in skills:
         errors.append(f"{rel}: duplicate name, also {skills[name].relative_to(ROOT)}")
     skills[name] = d

@@ -1,6 +1,6 @@
 ---
 name: z-no-comments
-description: Audit comments and lint/warning suppressions in the current diff for Linux kernel or QEMU code: delete narration and dead code, expose workaround/hack confessions as root-cause refactor targets, and encode real constraints in types, static checks, or tests. Use for /z-no-comments or $z-no-comments before review or patch prep.
+description: "Audit comments and lint/warning suppressions in the current diff for Linux kernel or QEMU code. Delete narration and dead code, expose workaround/hack confessions as root-cause refactor targets, and encode real constraints in types, static checks, or tests. Use for /z-no-comments or $z-no-comments before review or patch prep."
 disable-model-invocation: true
 ---
 
