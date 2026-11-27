@@ -101,8 +101,8 @@ Claude Code 和 Codex 可用（不依赖 Cursor 专属功能）。
 | `z-swarm`、`z-arena` | `swarm`、`arena` | 去掉 Cursor 模型路由与 Cloud Agent 绑定，保留并行切片/竞速 SHA 校验、隐式 Rubric 盲评与基底嫁接 |
 | `z-create-verify` | `create-verification-skill` + `maintain-verification-skill` | 合并生成与定期维护两套模式，面向 QEMU VM/QMP、内核 `-kernel`、VFIO/vGPU 与 selftest |
 | `z-no-comments` | `no-comments` + `agents/comment-sicko.md` | 改写为内核/QEMU 白名单（放行 SPDX、锁与内存屏障注释、硬件 quirk/spec、kernel-doc），猎杀废话与 workaround 注释并推动重构或静态断言编码 |
-| `z-writing` | `unslop` + `technical-writing` | 合并，加入代码注释规则 |
-| `z-patch` | `opening-a-pr` 的标题和正文规则 | 改成 commit message 和 cover letter |
+| `z-writing` | `unslop` + `technical-writing` | 合并，加入代码注释规则；补充中文 AI 空话禁词 |
+| `z-patch` | `opening-a-pr` 的标题和正文规则 | 改成 commit message 和 cover letter；显式套用 `z-writing`，要求纯文本、对齐 `git log` 风格，禁止复述 diff 的 bullet、Markdown、空洞总结句，以及 AI 的 `Co-Authored-By:` 和 `Generated with` 尾巴（上游政策要求披露时除外） |
 
 原则对照：
 
